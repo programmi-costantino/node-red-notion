@@ -1,6 +1,6 @@
 {
-  "name": "node-red-contrib-costantino",
-  "version": "0.0.8",
+  "name": "@costantino03/node-red-contrib-notion",
+  "version": "0.0.1",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
