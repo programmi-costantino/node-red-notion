@@ -1,20 +1,20 @@
 const axios = require('axios');
 
 module.exports = function (RED) {
-    function FindPageInNotion(config) {
+    function GetPagesByFilters(config) {
         RED.nodes.createNode(this, config);
         const node = this;
         node.notionApiKey = config.notionApiKey;
         node.databaseId = config.databaseId;
-        node.query = config.query;
+        node.filters = config.filters;
 
         node.on('input', async function (msg) {
             const notionApiKey = msg.notionApiKey || node.notionApiKey;
             const databaseId = msg.databaseId || node.databaseId;
-            const query = msg.query || node.query;
+            const filters = msg.filters || node.filters;
 
-            if (!notionApiKey || !databaseId || !query) {
-                node.error('Missing required parameters: notionApiKey, databaseId, or query', msg);
+            if (!notionApiKey || !databaseId || !filters) {
+                node.error('Missing required parameters: notionApiKey, databaseId, or filters', msg);
                 return;
             }
 
@@ -22,12 +22,7 @@ module.exports = function (RED) {
                 const response = await axios.post(
                     `https://api.notion.com/v1/databases/${databaseId}/query`,
                     {
-                        filter: {
-                            property: 'Title',
-                            text: {
-                                contains: query,
-                            },
-                        },
+                        filter: JSON.parse(filters),
                     },
                     {
                         headers: {
@@ -43,5 +38,5 @@ module.exports = function (RED) {
             }
         });
     }
-    RED.nodes.registerType('find-page-in-notion', FindPageInNotion);
+    RED.nodes.registerType('get-pages-by-filters', GetPagesByFilters);
 };
