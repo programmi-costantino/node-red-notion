@@ -1,0 +1,41 @@
+name: Execute Sequence of Workflows
+
+on:
+  push:
+    branches:
+      - main  # Puoi modificare il branch di riferimento se necessario
+  workflow_dispatch: # Aggiunto il trigger per l'avvio manuale
+
+jobs:
+  execute-npm-publish:
+    runs-on: [self-hosted, linux, x64]
+
+    steps:
+      - name: Execute npm-publish Workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const response = await github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'npm-publish.yml',
+              ref: context.ref,
+            });
+            core.setOutput('response', JSON.stringify(response));
+
+  execute-update-catalog:
+    runs-on: [self-hosted, linux, x64]
+    needs: execute-npm-publish
+
+    steps:
+      - name: Execute update-catalog Workflow
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const response = await github.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'update-catalog.yml',
+              ref: context.ref,
+            });
+            core.setOutput('response', JSON.stringify(response));
