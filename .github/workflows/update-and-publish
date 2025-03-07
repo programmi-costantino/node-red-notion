@@ -39,3 +39,19 @@ jobs:
               ref: context.ref,
             });
             core.setOutput('response', JSON.stringify(response));
+
+  merge-on-main:
+    runs-on: [self-hosted, linux, x64]
+    needs: execute-update-catalog
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Merge to main branch
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git checkout main
+          git merge --no-ff ${{ github.head_ref }}
+          git push origin main
