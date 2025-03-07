@@ -11,34 +11,28 @@ jobs:
     runs-on: [self-hosted, linux, x64]
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Execute npm-publish Workflow
-        uses: actions/github-script@v6
+        uses: actions/github@v3
         with:
-          script: |
-            const response = await github.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'npm-publish.yml',
-              ref: context.ref,
-            });
-            core.setOutput('response', JSON.stringify(response));
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event_type: npm-publish
 
   execute-update-catalog:
     runs-on: [self-hosted, linux, x64]
     needs: execute-npm-publish
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
       - name: Execute update-catalog Workflow
-        uses: actions/github-script@v6
+        uses: actions/github@v3
         with:
-          script: |
-            const response = await github.actions.createWorkflowDispatch({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              workflow_id: 'update-catalog.yml',
-              ref: context.ref,
-            });
-            core.setOutput('response', JSON.stringify(response));
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event_type: update-catalog
 
   merge-on-main:
     runs-on: [self-hosted, linux, x64]
